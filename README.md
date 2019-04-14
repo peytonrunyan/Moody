@@ -6,6 +6,10 @@ A mood tracker web based app, that logs a user's activities (sleep, diet, social
 
 The data science portion of this app is a python backend script. It reads in JSON data from MongoDB, converts it to a pandas dataframe, and then examines correlations between the input data and mood. It also scrapes Twitter for the user's activity, cleans the text data, and then performs sentiment analysis on it so that correlations between sentiment and mood can be seen. All data is visualized in interactive charts using plotly, and custom text providing a layman's explanation of the relationship is generated with each plot to ensure that the user does not have to interpet the graph on their own.
 
+## Demo Video
+
+https://vimeo.com/330355490
+
 ## Team
 |   [**Aaron Harbaugh**](https://github.com/aaharbaugh)  |   [**Jordan Massingill**](https://github.com/jordan-massingill)   |    [**Julie Jonak**](https://github.com/juliejonak)    |   [**Justin Kaseman**](https://github.com/Jkasem)  |   [**Peyton Runyan**](https://github.com/peytonrunyan)  |
 |:----------------:|:----------------:|:---------------:|:---------------:|:---------------:|
