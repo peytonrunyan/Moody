@@ -38,8 +38,8 @@ def main():
     df_plot = df_plot.sort_values(by='date')
     ###Twitter Stuff##############################
     #twitter auth
-    auth = tweepy.OAuthHandler('ToXDE3GjlUwLo3zvH3vgkpuU9', 'IQaWXTLQlhrTPkfoRXwigVXyRAJSgtb9013JqPIlZDbO4sZ0r1')
-    auth.set_access_token('1026856868097007617-GHj1xYaHubzTtelOJnnkP2DaZw0YL8', 'tlYqJOjeMNAMPGGZYOISyqvE0euiqGxc4wxpMthHd94Nn')
+    auth = tweepy.OAuthHandler(CREDENTIALS)
+    auth.set_access_token(ACCESS_TOKEN)
     #twitter fxn
     api = tweepy.API(auth)
 
