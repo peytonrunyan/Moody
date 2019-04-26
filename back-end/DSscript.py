@@ -4,7 +4,8 @@
 Created on Wed Jan  2 19:15:38 2019
 @author: peytonrunyan
 """
-#######import everything################################
+
+# imports
 import plotly
 plotly.tools.set_credentials_file(username='peytonrunyan', api_key='68GXBmyFht8zjMRPuFnC')
 import plotly.plotly as py
@@ -19,52 +20,49 @@ import sys, json
 
 import re
 from textblob import TextBlob
-#######Read data from stdin###############################
+
+# fxn to bring in data from MongoDB 
 def read_in():
     lines = sys.stdin.readlines()
-    #Since our input would only be having one line, parse our JSON data from that
-    return json.loads(lines[0])
+    return json.loads(lines[0]). # current input only has one line
 
 def main():
-    #get our data as an array from read_in()
     lines = read_in()
 
-    ####set data for plots###
+    # data to DF for plots and correlations
     df_plot= json_normalize(lines['days'])
     print(df_plot)
 
-    #Set date to pandas datatime
+    # convert to datetime
     df_plot['date'] = pd.to_datetime(df_plot['date'])
     df_plot = df_plot.sort_values(by='date')
-    ###Twitter Stuff##############################
-    #twitter auth
+    
+   
+    # twitter auth and init
     auth = tweepy.OAuthHandler(CREDENTIALS)
     auth.set_access_token(ACCESS_TOKEN)
-    #twitter fxn
     api = tweepy.API(auth)
 
-    #get twitter handle from JSON
+    # get twitter handle from DB
     username_input = json_normalize(lines)
     username = username_input['twitter'][0]
 
-    #get tweets and set to dataframe
+    # get tweets and set to dataframe
     tweets = api.user_timeline(screen_name=username, count=200)
     tweet_df = pd.DataFrame(data=[tweet.text for tweet in tweets], columns=['tweets'])
-    #add date column
+    
+    # add date column
     creation_date = pd.to_datetime([tweet.created_at for tweet in tweets])
     tweet_df['date'] = creation_date.date
 
-    #set date for tweets to filter and then filter by date
+    # set date for tweets to filter and then filter by date
     today = df_plot['date'][0]
     today_date = pd.to_datetime(today).date()
 
     today_tweets = tweet_df[tweet_df['date'] == today_date]
 
     def clean_tweet(tweet):
-        '''
-        Utility function to clean the text in a tweet by removing
-        links and special characters using regex.
-        '''
+        # Utility function to clean the text in a tweet by removing links and special characters using regex.
         return ' '.join(re.sub("(@[A-Za-z0-9]+)|([^0-9A-Za-z \t])|(\w+:\/\/\S+)", " ", tweet).split())
 
     clean_tweets = []
@@ -72,8 +70,10 @@ def main():
         clean_tweets.append(clean_tweet(tweet))
 
     pd.options.mode.chained_assignment = None
+    
     today_tweets['clean'] = clean_tweets
-
+    
+    # get sentiment for each tweet
     tweet_sentiment = []
 
     for tweet in today_tweets['clean']:
@@ -89,16 +89,15 @@ def main():
 
     day_sentiment = today_tweets['sentiment'].mean()
     
-#########################################################
-    #Correlations between mood and correlation_list items
+    # correlations between mood and correlation_list items
     correlation_list = ['caffeine','alcohol','food','sleep','water']
 
     correlation_dict = {}
     for i in correlation_list:
         correlation_dict[i] = df_plot['mood'].corr(df_plot[i])
 
-    #Create chart captions
-    tweet_cap = 'broken'
+    # create chart captions
+    tweet_cap = 'broken' # debugging default
 
     if day_sentiment == 0:
         tweet_cap = '<b><span style="color: #38A1F3">Your tweets are neutral today</span></b>'
@@ -133,19 +132,17 @@ def main():
         elif correlation_dict[correlation_list[i]] < -.7:
             caption_dict[correlation_list[i]] = tweet_cap + '<br>As your <b><span style="color: #009900">' + str(correlation_list[i]) + '</span></b> goes up, your <span style="color: #FF4099">mood</span> tends to <b> decrease </b>'
 
-        #255, 208, 22
-
-
-    #Create mood rolling average
+    # create mood rolling average
     rolling_mood = df_plot['mood'].rolling(3).mean()
 
+    # handle gaps in input
     rolling_mood.fillna(0)
 
 
 
 
-    #Let's graph some shizz
-
+    # create graphs to be displayed
+    # all parameters explicit for ease of modification
     trace1 = go.Scatter(
         x = df_plot['date'],
         y = rolling_mood,
@@ -230,6 +227,7 @@ def main():
 
     data = [trace1, trace2, trace3, trace4, trace5, trace6]
 
+    # create interactive menus for graphs
     updatemenus = list([
         dict(active=-1,
             buttons=list([
