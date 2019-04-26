@@ -37,6 +37,7 @@ https://vimeo.com/330355490
 ### Machine Learning
 
 - Python
+- Numpy
 - Pandas
 - Tweepy
 - Plotly
