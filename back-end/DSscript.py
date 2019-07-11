@@ -11,40 +11,42 @@ import plotly.plotly as py
 import plotly.graph_objs as go
 import numpy as np
 import pandas as pd
-import functions
+import utils
 
 # plotly credentials
 plotly.tools.set_credentials_file(username=PLOTLY_USER_NAME, api_key=PLOTLY_API_KEY)
 
+def prepare_data(correlation_list):
+    """
+    Returns pandas dataframe, string with HTML formatting, pandas series, dictionary
+    
+    See utils.py for specifics 
+    """
+    
+    # get data
+    lines = utils.read_in()
+    df_plot = utils.generate_df(lines)
+    tweet_df = utils.tweets_df(lines)
+    
+    # graph captions
+    most_recent_date = pd.to_datetime(df_plot['date'][0]).date()
+    most_recent_tweets = tweet_df.copy()[tweet_df['date'] == most_recent_date]
+    most_recent_sentiment = utils.get_sentiment(most_recent_tweets['clean']).mean()
+    tweet_cap = caption_sentiment(most_recent_sentiment)
+    caption_dict = utils.graph_captions(correlation_list, tweet_cap)
+    
+    # provides smoothing for mood line and fills gaps
+    rolling_mood = df_plot['mood'].rolling(3).mean()
+    rolling_mood.fillna(0)
+    
+    return df_plot, tweet_cap, caption_dict, rolling_mood
 
 def main():
     
-    # get data from mongoDB
-    lines = functions.read_in()
+    # prepare data 
+    caption_dict = ['caffeine','alcohol','food','sleep','water']
     
-    # create DF for plots and correlations
-    df_plot = functions.generate_df(lines)
-    
-    # create DF from user tweets for sentiment analysis
-    tweet_df = functions.tweets_df(lines)
-    
-    # get most recent date of activity
-    most_recent_date = pd.to_datetime(df_plot['date'][0]).date()
-
-    # get sentiment for the today's tweets
-    most_recent_tweets = tweet_df.copy()[tweet_df['date'] == most_recent_date]
-    most_recent_sentiment = functions.get_sentiment(most_recent_tweets['clean']).mean()
-
-    # create chart captions
-    tweet_cap = caption_sentiment(most_recent_sentiment)
-    correlation_list = ['caffeine','alcohol','food','sleep','water']
-    caption_dict = functions.graph_captions(correlation_list, tweet_cap)
-    
-    # create mood rolling average
-    rolling_mood = df_plot['mood'].rolling(3).mean()
-
-    # handle gaps in input
-    rolling_mood.fillna(0)
+    df_plot, tweet_cap, caption_dict, rolling_mood = prepare_data(caption_dict)
 
     # create graphs to be displayed
     trace1 = go.Scatter(
