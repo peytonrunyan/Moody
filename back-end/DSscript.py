@@ -67,6 +67,7 @@ def generate_plot(column, visibility=False, col_name=False, marker_color='rgba(0
     
 def main():
     
+    # get data
     lines = utils.read_in()
     df_plot = utils.generate_df(lines)
     correlation_list = df_plot.columns.to_list().remove('mood')
@@ -85,11 +86,11 @@ def main():
         width = 4),
         marker = dict(color='rgba(255,64,153,1)'))
 
-    data = [trace1]
+    plots = [trace1]
     
     # generate plots for all other recorded items
     for column in correlation_list:
-        data.append(generate_plot(column))
+        plots.append(generate_plot(column))
 
     # create buttons and set visibility for each plot
     buttons_list = []
@@ -114,7 +115,7 @@ def main():
                 showlegend=False,
                 updatemenus=updatemenus)
 
-    fig = dict(data = data, layout = layout)
+    fig = dict(data = plots, layout = layout)
     plot_url = py.plot(fig, filename = 'plot from API (12)', auto_open=False)
 
 #start process
