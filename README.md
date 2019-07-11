@@ -1,6 +1,6 @@
 # Moody
 
-A mood tracker web based app, that logs a user's activities (sleep, diet, social media use, etc.) and presents the user with how those affect their mood over time.
+A mood tracking web application that logs a user's activities (sleep, diet, social media use, etc.) and presents the user with how those affect their mood over time.
 
 ## Data Science 
 
