@@ -64,7 +64,24 @@ def generate_plot(column, visibility=False, col_name=False, marker_color='rgba(0
         marker = dict(color = marker_color)) 
     
     return trace
-    
+        
+        
+def create_buttons(correlation_list):
+    """
+    Returns a list of buttons and their default visibility state for plotly graphs
+    """
+    buttons_list = []
+    for i in range(len(correlation_list)):
+        visibility_index = i+1
+        visible = ([True]+len(correlation_list)*[False])
+        visible[visibility_index] = True
+
+        buttons.append(dict(label = correlation_list[i].capitalize(),
+                   method = 'update',
+                   args = [{'visible': visible},
+                                {'title': caption_dict[correlation_list[i]]}]))
+        
+        
 def main():
     
     # get data
@@ -93,16 +110,7 @@ def main():
         plots.append(generate_plot(column))
 
     # create buttons and set visibility for each plot
-    buttons_list = []
-    for i in range(len(correlation_list)):
-        visibility_index = i+1
-        visible = ([True]+len(correlation_list)*[False])
-        visible[visibility_index] = True
-
-        buttons.append(dict(label = correlation_list[i].capitalize(),
-                   method = 'update',
-                   args = [{'visible': visible},
-                                {'title': caption_dict[correlation_list[i]]}]))
+    buttons_list = create_buttons(correlation_list)
         
     updatemenus = list([{active: -1, buttons: buttons_list}])
 
