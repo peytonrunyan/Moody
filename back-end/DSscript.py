@@ -80,7 +80,8 @@ def create_buttons(correlation_list):
                    method = 'update',
                    args = [{'visible': visible},
                                 {'title': caption_dict[correlation_list[i]]}]))
-        
+    return buttons_list    
+      
         
 def main():
     
